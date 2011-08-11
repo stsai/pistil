@@ -53,7 +53,6 @@ class Child(object):
         self.child_type = child_type
         self.args = args
         self.name = name
-        print self.name
 
 
 # chaine init worker:
