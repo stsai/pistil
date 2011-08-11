@@ -2,10 +2,10 @@ pistil
 ------
 
 
-Simple multiprocessing toolkit. This is based on the `Gunicorn <http://gunicorn.orh>`_ multiprocessing engine. 
+Simple multiprocessing toolkit. This is based on the `Gunicorn <http://gunicorn.orh>`_ multiprocessing engine.
 
 This library allows you to supervise multiple type of workers and chain
-supervisors. Gracefull, reload, signaling between workers is handled.  
+supervisors. Gracefull, reload, signaling between workers is handled.
 
 
 Simple Arbiter launching one worker::
@@ -26,7 +26,7 @@ Simple Arbiter launching one worker::
 
 The same with different with the Pool arbiter. This time we send the
 same worker on 3 os processes::
-    
+
     from pistil.pool import PoolArbiter
     from pistil.worker import Worker
 
@@ -52,7 +52,7 @@ Pistil allows you to mix diffrent kind of workers in an arbiter::
 
     class MyWorker(Worker):
 
-        def handle(self): 
+        def handle(self):
             print "hello worker 1 from %s" % self.name
 
     class MyWorker2(Worker):
@@ -73,7 +73,7 @@ Pistil allows you to mix diffrent kind of workers in an arbiter::
         arbiter = Arbiter(conf, specs)
         arbiter.run()
 
-You can also chain arbiters:: 
+You can also chain arbiters::
 
     import time
     import urllib2
@@ -92,7 +92,7 @@ You can also chain arbiters::
             p = HttpStream(SocketReader(sock))
             path = p.path()
             data = "welcome wold"
-            sock.send("".join(["HTTP/1.1 200 OK\r\n", 
+            sock.send("".join(["HTTP/1.1 200 OK\r\n",
                             "Content-Type: text/html\r\n",
                             "Content-Length:" + str(len(data)) + "\r\n",
                              "Connection: close\r\n\r\n",
@@ -129,7 +129,7 @@ This examplelaunch a web server with 3 workers on port 5000 and another
 worker fetching the welcome page hosted by this server::
 
 
-    $ python examples/multiworker2.py 
+    $ python examples/multiworker2.py
 
     2011-08-08 00:05:42 [13195] [DEBUG] Arbiter master booted on 13195
     2011-08-08 00:05:42 [13196] [INFO] Booting grabber (worker) with pid: 13196

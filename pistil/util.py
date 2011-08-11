@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of gunicorn released under the MIT license. 
+# This file is part of gunicorn released under the MIT license.
 # See the NOTICE for more information.
 
 
@@ -55,11 +55,11 @@ hop_headers = set("""
     te trailers transfer-encoding upgrade
     server date
     """.split())
-            
+
 try:
     from setproctitle import setproctitle
     def _setproctitle(title):
-        setproctitle(title) 
+        setproctitle(title)
 except ImportError:
     def _setproctitle(title):
         return
@@ -81,9 +81,9 @@ def load_worker_class(uri):
             try:
                 if uri.startswith("#"):
                     uri = uri[1:]
-                return pkg_resources.load_entry_point("gunicorn", 
+                return pkg_resources.load_entry_point("gunicorn",
                             "gunicorn.workers", uri)
-            except ImportError: 
+            except ImportError:
                 raise RuntimeError("arbiter uri invalid or not found")
         klass = components.pop(-1)
         mod = __import__('.'.join(components))
@@ -102,10 +102,10 @@ def set_owner_process(uid,gid):
             # versions of python < 2.6.2 don't manage unsigned int for
             # groups like on osx or fedora
             os.setgid(-ctypes.c_int(-gid).value)
-            
+
     if uid:
         os.setuid(uid)
-        
+
 def chown(path, uid, gid):
     try:
         os.chown(path, uid, gid)
@@ -121,7 +121,7 @@ def is_ipv6(addr):
     except socket.error: # not a valid address
         return False
     return True
-        
+
 def parse_address(netloc, default_port=8000):
     if isinstance(netloc, tuple):
         return netloc
@@ -138,7 +138,7 @@ def parse_address(netloc, default_port=8000):
         host = "0.0.0.0"
     else:
         host = netloc.lower()
-    
+
     #get port
     netloc = netloc.split(']')[-1]
     if ":" in netloc:
@@ -147,9 +147,9 @@ def parse_address(netloc, default_port=8000):
             raise RuntimeError("%r is not a valid port number." % port)
         port = int(port)
     else:
-        port = default_port 
+        port = default_port
     return (host, port)
-    
+
 def get_maxfd():
     maxfd = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
     if (maxfd == resource.RLIM_INFINITY):
@@ -160,7 +160,7 @@ def close_on_exec(fd):
     flags = fcntl.fcntl(fd, fcntl.F_GETFD)
     flags |= fcntl.FD_CLOEXEC
     fcntl.fcntl(fd, fcntl.F_SETFD, flags)
-    
+
 def set_non_blocking(fd):
     flags = fcntl.fcntl(fd, fcntl.F_GETFL) | os.O_NONBLOCK
     fcntl.fcntl(fd, fcntl.F_SETFL, flags)
@@ -174,7 +174,7 @@ def close(sock):
 def write_chunk(sock, data):
     chunk = "".join(("%X\r\n" % len(data), data, "\r\n"))
     sock.sendall(chunk)
-    
+
 def write(sock, data, chunked=False):
     if chunked:
         return write_chunk(sock, data)
@@ -190,7 +190,7 @@ def write_nonblock(sock, data, chunked=False):
             sock.setblocking(1)
     else:
         return write(sock, data, chunked)
-    
+
 def writelines(sock, lines, chunked=False):
     for line in list(lines):
         write(sock, line, chunked)
@@ -220,7 +220,7 @@ def write_error(sock, status_int, reason, mesg):
 
 def normalize_name(name):
     return  "-".join([w.lower().capitalize() for w in name.split("-")])
-    
+
 def import_app(module):
     parts = module.split(":", 1)
     if len(parts) == 1:
@@ -255,7 +255,7 @@ def http_date(timestamp=None):
             day, monthname[month], year,
             hh, mm, ss)
     return s
-    
+
 def to_bytestring(s):
     """ convert to bytestring an unicode """
     if not isinstance(s, basestring):
@@ -280,7 +280,7 @@ def daemonize():
 
         if os.fork():
             os._exit(0)
-        
+
         os.umask(0)
         maxfd = get_maxfd()
 
@@ -290,7 +290,7 @@ def daemonize():
                 os.close(fd)
             except OSError:	# ERROR, fd wasn't open to begin with (ignored)
                 pass
-        
+
         os.open(REDIRECT_TO, os.O_RDWR)
         os.dup2(0, 1)
         os.dup2(0, 2)
@@ -313,7 +313,7 @@ class _Missing(object):
 _missing = _Missing()
 
 class cached_property(object):
-    
+
     def __init__(self, func, name=None, doc=None):
         self.__name__ = name or func.__name__
         self.__module__ = func.__module__

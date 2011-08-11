@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of pistil released under the MIT license. 
+# This file is part of pistil released under the MIT license.
 # See the NOTICE for more information.
 
 from pistil.tcp.sync_worker import TcpSyncWorker
@@ -16,7 +16,7 @@ class MyTcpWorker(TcpSyncWorker):
 
         path = p.path()
         data = "hello world"
-        sock.send("".join(["HTTP/1.1 200 OK\r\n", 
+        sock.send("".join(["HTTP/1.1 200 OK\r\n",
                         "Content-Type: text/html\r\n",
                         "Content-Length:" + str(len(data)) + "\r\n",
                          "Connection: close\r\n\r\n",
@@ -25,7 +25,7 @@ class MyTcpWorker(TcpSyncWorker):
 if __name__ == '__main__':
     conf = {"num_workers": 3}
     spec = (MyTcpWorker, 30, "worker", {}, "worker",)
-    
+
     arbiter = TcpArbiter(conf, spec)
 
     arbiter.run()

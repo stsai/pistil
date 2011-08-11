@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of pistil released under the MIT license. 
+# This file is part of pistil released under the MIT license.
 # See the NOTICE for more information.
 
 import errno
@@ -75,7 +75,7 @@ class Arbiter(object):
     # this error code, the arbiter will terminate.
     _WORKER_BOOT_ERROR = 3
 
-    _WORKERS = {}    
+    _WORKERS = {}
     _PIPE = []
 
     # I love dynamic languages
@@ -88,7 +88,7 @@ class Arbiter(object):
         (getattr(signal, name), name[3:].lower()) for name in dir(signal)
         if name[:3] == "SIG" and name[3] != "_"
     )
-    
+
     def __init__(self, args, specs=[], name=None,
             child_type="supervisor", age=0, ppid=0,
             timeout=30):
@@ -123,7 +123,7 @@ class Arbiter(object):
         self.stopping = False
         self.debug =self.conf.get("debug", False)
         self.tmp = WorkerTmp(self.conf)
-        
+
     def on_init(self, args):
         return []
 
@@ -143,7 +143,7 @@ class Arbiter(object):
 
         # set current pid
         self.pid = os.getpid()
-        
+
         util.set_owner_process(self.conf.get("uid", os.geteuid()),
                 self.conf.get("gid", os.getegid()))
 
@@ -164,7 +164,7 @@ class Arbiter(object):
         # Enter main run loop
         self.booted = True
         self.run()
-    
+
 
     def when_ready(self):
         pass
@@ -190,7 +190,7 @@ class Arbiter(object):
             log.warn("Dropping signal: %s", sig)
 
     def run(self):
-        "Main master loop." 
+        "Main master loop."
         if not self.booted:
             return self.init_process()
 
@@ -207,11 +207,11 @@ class Arbiter(object):
                     self.murder_workers()
                     self.manage_workers()
                     continue
-                
+
                 if sig not in self._SIG_NAMES:
                     log.info("Ignoring unknown signal: %s", sig)
                     continue
-                
+
                 signame = self._SIG_NAMES.get(sig)
                 handler = getattr(self, "handle_%s" % signame, None)
                 if not handler:
@@ -230,7 +230,7 @@ class Arbiter(object):
             except SystemExit:
                 raise
             except Exception:
-                log.info("Unhandled exception in main loop:\n%s",  
+                log.info("Unhandled exception in main loop:\n%s",
                             traceback.format_exc())
                 self.stop(False)
                 sys.exit(-1)
@@ -239,7 +239,7 @@ class Arbiter(object):
         "SIGCHLD handling"
         self.wakeup()
         self.reap_workers()
-        
+
     def handle_hup(self):
         """\
         HUP handling.
@@ -249,15 +249,15 @@ class Arbiter(object):
         """
         log.info("Hang up: %s", self.name)
         self.reload()
-        
+
     def handle_quit(self):
         "SIGQUIT handling"
         raise StopIteration
-    
+
     def handle_int(self):
         "SIGINT handling"
         raise StopIteration
-    
+
     def handle_term(self):
         "SIGTERM handling"
         self.stop(False)
@@ -269,7 +269,7 @@ class Arbiter(object):
         Kill all workers by sending them a SIGUSR1
         """
         self.kill_workers(signal.SIGUSR1)
-    
+
     def handle_winch(self):
         "SIGWINCH handling"
         if os.getppid() == 1 or os.getpgrp() != os.getpid():
@@ -278,7 +278,7 @@ class Arbiter(object):
             self.kill_workers(signal.SIGQUIT)
         else:
             log.info("SIGWINCH ignored. Not daemonized")
-    
+
     def wakeup(self):
         """\
         Wake up the arbiter by writing to the _PIPE
@@ -288,8 +288,8 @@ class Arbiter(object):
         except IOError, e:
             if e.errno not in [errno.EAGAIN, errno.EINTR]:
                 raise
-        
-                    
+
+
     def halt(self, reason=None, exit_status=0):
         """ halt arbiter """
         log.info("Shutting down: %s", self.name)
@@ -298,7 +298,7 @@ class Arbiter(object):
         self.stop()
         log.info("See you next")
         sys.exit(exit_status)
-        
+
     def sleep(self):
         """\
         Sleep until _PIPE is readable or we timeout.
@@ -318,19 +318,19 @@ class Arbiter(object):
                 raise
         except KeyboardInterrupt:
             sys.exit()
-            
-    
+
+
     def on_stop(self, graceful=True):
         """ method used to pass code when the server start """
 
     def stop(self, graceful=True):
         """\
         Stop workers
-        
+
         :attr graceful: boolean, If True (the default) workers will be
         killed gracefully  (ie. trying to wait for the current connection)
         """
-        
+
         ## pass any actions before we effectively stop
         self.on_stop(graceful=graceful)
         self.stopping = True
@@ -344,7 +344,7 @@ class Arbiter(object):
             self.kill_workers(sig)
             time.sleep(0.1)
             self.reap_workers()
-        self.kill_workers(signal.SIGKILL)   
+        self.kill_workers(signal.SIGKILL)
         self.stopping = False
 
     def on_reload(self):
@@ -352,10 +352,10 @@ class Arbiter(object):
 
 
     def reload(self):
-        """ 
+        """
         used on HUP
         """
-    
+
         # exec on reload hook
         self.on_reload()
 
@@ -371,7 +371,7 @@ class Arbiter(object):
 
         # set new proc_name
         util._setproctitle("arbiter [%s]" % self.name)
-        
+
         # kill old workers
         for wpid, (child, state) in OLD__WORKERS.items():
             if state:
@@ -384,7 +384,7 @@ class Arbiter(object):
                     sig =  signal.SIGQUIT
                 self.kill_worker(wpid, sig)
 
-        
+
     def murder_workers(self):
         """\
         Kill unused/idle workers
@@ -401,7 +401,7 @@ class Arbiter(object):
 
             log.critical("WORKER TIMEOUT (pid:%s)", pid)
             self.kill_worker(pid, signal.SIGKILL)
-        
+
     def reap_workers(self):
         """\
         Reap workers to avoid zombie processes
@@ -411,7 +411,7 @@ class Arbiter(object):
                 wpid, status = os.waitpid(-1, os.WNOHANG)
                 if not wpid:
                     break
-                
+
                 # A worker said it cannot boot. We'll shutdown
                 # to avoid infinite start/stop cycles.
                 exitcode = status >> 8
@@ -430,7 +430,7 @@ class Arbiter(object):
         except OSError, e:
             if e.errno == errno.ECHILD:
                 pass
-    
+
     def manage_workers(self):
         """\
         Maintain the number of workers by spawning or killing
@@ -447,7 +447,7 @@ class Arbiter(object):
 
     def post_fork(self, worker):
         """ method executed after we forked a worker """
-            
+
     def spawn_child(self, child_spec):
         self.child_age += 1
         name = child_spec.name
@@ -461,12 +461,12 @@ class Arbiter(object):
             child = child_spec.child_class(
                         child_args,
                         name = name,
-                        child_type = child_type, 
+                        child_type = child_type,
                         age = self.child_age,
                         ppid = self.pid,
                         timeout = child_spec.timeout)
         except:
-            log.info("Unhandled exception while creating '%s':\n%s",  
+            log.info("Unhandled exception while creating '%s':\n%s",
                             name, traceback.format_exc())
             return
 
@@ -504,12 +504,12 @@ class Arbiter(object):
     def spawn_workers(self):
         """\
         Spawn new workers as needed.
-        
+
         This is where a worker process leaves the main loop
         of the master process.
         """
-        
-        for child in self._CHILDREN_SPECS: 
+
+        for child in self._CHILDREN_SPECS:
             self.spawn_child(child)
 
     def kill_workers(self, sig):
@@ -519,12 +519,12 @@ class Arbiter(object):
         """
         for pid in self._WORKERS.keys():
             self.kill_worker(pid, sig)
-                   
+
 
     def kill_worker(self, pid, sig):
         """\
         Kill a worker
-        
+
         :attr pid: int, worker pid
         :attr sig: `signal.SIG*` value
          """
@@ -538,10 +538,10 @@ class Arbiter(object):
                 try:
                     (child, info) = self._WORKERS.pop(pid)
                     child.tmp.close()
-           
+
                     if not self.stopping:
                         self._WORKERS["<killed %s>"  % id(child)] = (child, 0)
                     return
                 except (KeyError, OSError):
                     return
-            raise            
+            raise

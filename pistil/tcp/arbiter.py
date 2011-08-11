@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of pistil released under the MIT license. 
+# This file is part of pistil released under the MIT license.
 # See the NOTICE for more information.
 
 import logging
@@ -23,12 +23,12 @@ class TcpArbiter(PoolArbiter):
 
         # we want to pass the socket to the worker.
         self.conf.update({"sock": self._LISTENER})
-        
+
 
     def when_ready(self):
         log.info("Listening at: %s (%s)", self._LISTENER,
             self.pid)
-   
+
     def on_reexec(self):
         # save the socket file descriptor number in environ to reuse the
         # socket after forking a new master.

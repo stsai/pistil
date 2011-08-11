@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of pistil released under the MIT license. 
+# This file is part of pistil released under the MIT license.
 # See the NOTICE for more information.
 
 import errno
@@ -23,7 +23,7 @@ class TcpSyncWorker(Worker):
         self.socket = self.conf.get('sock')
         self.address = self.socket.getsockname()
         util.close_on_exec(self.socket)
-        
+
     def run(self):
         self.socket.setblocking(0)
 
@@ -53,7 +53,7 @@ class TcpSyncWorker(Worker):
             if self.ppid != os.getppid():
                 log.info("Parent changed, shutting down: %s", self)
                 return
-            
+
             try:
                 self.notify()
                 ret = select.select([self.socket], [], self._PIPE,

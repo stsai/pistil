@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of pistil released under the MIT license. 
+# This file is part of pistil released under the MIT license.
 # See the NOTICE for more information.
 
 import time
@@ -21,7 +21,7 @@ class MyTcpWorker(TcpSyncWorker):
 
         path = p.path()
         data = "welcome wold"
-        sock.send("".join(["HTTP/1.1 200 OK\r\n", 
+        sock.send("".join(["HTTP/1.1 200 OK\r\n",
                         "Content-Type: text/html\r\n",
                         "Content-Length:" + str(len(data)) + "\r\n",
                          "Connection: close\r\n\r\n",
@@ -32,11 +32,11 @@ class UrlWorker(Worker):
 
     def run(self):
         print "ici"
-        while self.alive: 
+        while self.alive:
             time.sleep(0.1)
             f = urllib2.urlopen("http://localhost:5000")
             print f.read()
-            self.notify() 
+            self.notify()
 
 class MyPoolArbiter(TcpArbiter):
 

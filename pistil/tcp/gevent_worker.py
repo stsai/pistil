@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of pistil released under the MIT license. 
+# This file is part of pistil released under the MIT license.
 # See the NOTICE for more information.
 
 import os
@@ -17,7 +17,7 @@ from gevent.pool import Pool
 from gevent.server import StreamServer
 
 from pistil import util
-from pistil.tcp.sync_worker import TcpSyncWorker 
+from pistil.tcp.sync_worker import TcpSyncWorker
 
 # workaround on osx, disable kqueue
 if sys.platform == "darwin":
@@ -40,13 +40,13 @@ class PStreamServer(StreamServer):
 class TcpGeventWorker(TcpSyncWorker):
 
     def on_init(self, conf):
-        self.worker_connections = conf.get("worker_connections", 
+        self.worker_connections = conf.get("worker_connections",
                 10000)
         self.pool = Pool(self.worker_connections)
 
     def run(self):
         self.socket.setblocking(1)
-        
+
         # start gevent stream server
         server = PStreamServer(self.socket, self.handle, spawn=self.pool,
                 worker=self)
@@ -58,9 +58,9 @@ class TcpGeventWorker(TcpSyncWorker):
                 if self.ppid != os.getppid():
                     self.log.info("Parent changed, shutting down: %s", self)
                     break
-        
+
                 gevent.sleep(1.0)
-                
+
         except KeyboardInterrupt:
             pass
 
